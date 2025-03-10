@@ -37,9 +37,9 @@ function LoadingIndicator() {
 // Modern house model
 function ModernHouseModel({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 1, onLoaded }) {
   const groupRef = useRef();
-  // Using a locally hosted or reliable 3D model source
+  // Using a direct URL to a free 3D model
   const [modelError, setModelError] = useState(false);
-  const { scene } = useGLTF("/models/modern_house.glb", undefined, 
+  const { scene } = useGLTF("https://dl.dropbox.com/s/89no6h10sgkdrex/modern_house.glb", undefined, 
     (error) => {
       console.error("Error loading modern house model:", error);
       setModelError(true);
@@ -97,6 +97,91 @@ function ModernHouseModel({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 
         <mesh position={[0, 0.75, 0]} castShadow>
           <coneGeometry args={[1.5, 1, 4]} />
           <meshStandardMaterial color="#3277e5" />
+        </mesh>
+        <Html position={[0, 2, 0]}>
+          <div className="bg-black/70 text-white px-3 py-1 rounded-lg text-sm">
+            Model unavailable - using placeholder
+          </div>
+        </Html>
+      </group>
+    );
+  }
+  
+  return (
+    <group 
+      ref={groupRef} 
+      position={position}
+      rotation={rotation}
+      scale={scale}
+    >
+      <primitive object={scene} />
+    </group>
+  );
+}
+
+// Traditional house model
+function TraditionalHouseModel({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 1, onLoaded }) {
+  const groupRef = useRef();
+  // Using a direct URL to a free 3D model
+  const [modelError, setModelError] = useState(false);
+  const { scene } = useGLTF("https://dl.dropbox.com/s/0f5cccdnmkdukbq/traditional_house.glb", undefined, 
+    (error) => {
+      console.error("Error loading traditional house model:", error);
+      setModelError(true);
+    }
+  );
+  
+  // Apply some default materials if needed
+  useEffect(() => {
+    if (scene) {
+      try {
+        scene.traverse((child) => {
+          if (child.isMesh) {
+            // Enable shadows
+            child.castShadow = true;
+            child.receiveShadow = true;
+            
+            // If the material looks too dark, we can adjust it
+            if (child.material) {
+              // Ensure materials are properly lit
+              child.material.roughness = Math.min(child.material.roughness || 0.5, 0.8);
+              child.material.metalness = Math.min(child.material.metalness || 0.2, 0.5);
+            }
+          }
+        });
+        
+        // Signal that the model loaded successfully
+        if (onLoaded) onLoaded();
+      } catch (e) {
+        console.error("Error setting up model materials:", e);
+      }
+    }
+  }, [scene, onLoaded]);
+  
+  // Add some subtle animation
+  useFrame((state) => {
+    if (groupRef.current) {
+      // Subtle floating animation
+      groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
+    }
+  });
+  
+  // If there's an error loading the model, show a fallback cube
+  if (modelError) {
+    return (
+      <group
+        ref={groupRef}
+        position={position}
+        rotation={rotation}
+        scale={scale}
+      >
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[2, 1, 2]} />
+          <meshStandardMaterial color="#8a6d3b" />
+        </mesh>
+        <mesh position={[0, 0.75, 0]} castShadow>
+          <coneGeometry args={[1.5, 1, 4]} />
+          <meshStandardMaterial color="#7a5d2b" />
         </mesh>
         <Html position={[0, 2, 0]}>
           <div className="bg-black/70 text-white px-3 py-1 rounded-lg text-sm">
@@ -208,6 +293,14 @@ function HouseWithInfo({ position = [0, 0, 0], scale = 1, houseType = "modern", 
   const [infoPosition, setInfoPosition] = useState([0, 2, 0]);
   const [useSimpleModel, setUseSimpleModel] = useState(false);
   
+  // Handle model loading errors by falling back to simple model
+  const handleModelError = () => {
+    console.log("Falling back to simple house model");
+    setUseSimpleModel(true);
+    // Still call onModelLoaded to signal that we've handled the error
+    if (onModelLoaded) onModelLoaded();
+  };
+  
   // Property details based on house type
   const propertyInfo = houseType === "modern" 
     ? {
@@ -247,11 +340,11 @@ function HouseWithInfo({ position = [0, 0, 0], scale = 1, houseType = "modern", 
           onLoaded={onModelLoaded}
         />
       ) : (
-        <SimpleHouseModel 
+        <TraditionalHouseModel 
           position={[0, 0, 0]} 
           rotation={[0, Math.PI / 4, 0]} 
-          scale={scale} 
-          type="traditional"
+          scale={scale * 0.8} 
+          onLoaded={onModelLoaded}
         />
       )}
       
