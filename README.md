@@ -14,6 +14,7 @@ A cutting-edge portfolio website featuring the latest design and development tre
 - Interactive 3D real estate explorer with realistic house models
 - Property information cards on hover
 - Multiple property types with switching feature
+- Includes free 3D models ready to use with direct URLs
 - Fallback to simple models when 3D models aren't available
 
 ### 3. Microinteractions and Subtle Animations
@@ -55,12 +56,27 @@ A cutting-edge portfolio website featuring the latest design and development tre
 - Reduced motion settings
 - Screen reader compatible markup
 - Keyboard navigation optimized
+- Error boundaries and fallbacks for all 3D content
 
 ### 10. Asymmetrical Layouts
 - Breaking from rigid grid systems for organic feel
 - Overlapping elements creating depth
 - Intentional "breaking" of conventional design rules
 - Responsive layouts that reorganize beautifully
+
+## 3D Models Included
+
+The project comes with direct links to free 3D house models:
+
+1. **Modern House** - A contemporary design with sleek lines and modern architecture
+   - Created by Nigel Hants
+   - [View on Sketchfab](https://sketchfab.com/3d-models/modern-house-ef570e0fcc854d9b834691433178ba4d)
+
+2. **Traditional House** - A classic country house design with traditional features
+   - Created by Irina Shakirzyanova
+   - [View on Sketchfab](https://sketchfab.com/3d-models/country-house-b8a96eadc7b44291836da32698ab6641)
+
+These models are loaded directly from URLs and don't require any additional setup.
 
 ## Tech Stack
 
@@ -90,10 +106,10 @@ yarn dev
 
 3. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-4. Add 3D models (optional):
+4. Add custom 3D models (optional):
    - Download GLB format house models from free 3D repositories
    - Place them in `/public/models/` as `modern_house.glb` and `traditional_house.glb`
-   - The site includes fallback models if these files aren't available
+   - Or continue using the provided direct URLs in the code
 
 ## Customization
 
@@ -102,7 +118,7 @@ You can easily customize this portfolio by:
 1. Modifying the content in `app/page.tsx`
 2. Changing colors in `app/globals.css` and `tailwind.config.ts`
 3. Adding real audio files to `/public`
-4. Adding your own 3D models to the `/public/models` directory
+4. Adding your own 3D models or changing the URLs in `HouseModelViewer.tsx`
 
 ## Accessibility
 
